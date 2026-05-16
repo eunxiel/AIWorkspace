@@ -792,7 +792,6 @@ body { display: flex; position: relative; }
   /* ── Topbar mobile ── */
   .topbar { gap: 8px; padding: 8px 10px; top: 8px; }
   .search-wrap { display: none; }               /* sembunyikan search di mobile */
-  .settings-btn { display: none; }             /* settings ada di sidebar */
   .lang-label { display: none; }               /* hide "EN" text, keep globe */
   .lang-btn { padding: 7px 10px; border-radius: 10px; min-width: 36px; justify-content: center; }
   .theme-toggle { width: 36px; height: 36px; border-radius: 10px; font-size: 15px; }

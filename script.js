@@ -1204,6 +1204,9 @@ let _recaptchaVerifier  = null;
   try {
     firebase.initializeApp(cfg);
     _fbAuth = firebase.auth();
+    /* Handle hasil redirect Google Sign-In */
+    _fbAuth.getRedirectResult().catch(() => {});
+
     _fbAuth.onAuthStateChanged(fbUser => {
       if (fbUser) {
         _user = {
@@ -1340,18 +1343,29 @@ $("#authOverlay")?.addEventListener("click", e => { if (e.target === $("#authOve
 /* ── Google Sign-In ── */
 $("#googleSignInBtn")?.addEventListener("click", async () => {
   if (!_fbAuth) {
-    _setErr("Firebase belum dikonfigurasi. Isi FIREBASE config di config.js terlebih dahulu.");
+    _setErr("Firebase belum dikonfigurasi.");
     return;
   }
   _setErr("");
+  const btn = $("#googleSignInBtn");
+  if (btn) { btn.disabled = true; btn.style.opacity = "0.65"; }
   try {
     const provider = new firebase.auth.GoogleAuthProvider();
     await _fbAuth.signInWithPopup(provider);
     _closeAuthModal();
   } catch (err) {
-    if (err.code === "auth/popup-closed-by-user") _setErr("Login dibatalkan.");
-    else if (err.code === "auth/popup-blocked") _setErr("Pop-up diblokir browser. Izinkan pop-up dan coba lagi.");
-    else _setErr(err.message || "Gagal login. Coba lagi.");
+    if (err.code === "auth/popup-closed-by-user") {
+      _setErr("Login dibatalkan.");
+    } else if (err.code === "auth/popup-blocked") {
+      _setErr("Popup diblokir — mengalihkan ke Google...");
+      await _fbAuth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
+    } else if (err.code === "auth/unauthorized-domain") {
+      _setErr("Domain belum diizinkan. Buka Firebase Console → Authentication → Authorized domains → tambahkan domain situs ini.");
+    } else {
+      _setErr(err.message || "Gagal login. Coba lagi.");
+    }
+  } finally {
+    if (btn) { btn.disabled = false; btn.style.opacity = ""; }
   }
 });
 
