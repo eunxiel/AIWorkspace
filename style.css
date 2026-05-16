@@ -706,6 +706,20 @@ body { display: flex; position: relative; }
 @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
 
+/* =================== SIDEBAR LOGIN CTA =================== */
+.sidebar-login-cta { padding: 8px 12px; }
+.login-cta-btn {
+  width: 100%; display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; border-radius: var(--radius-sm); cursor: pointer;
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  color: #fff; box-shadow: 0 4px 18px var(--primary-glow);
+  transition: opacity 0.2s, transform 0.15s;
+}
+.login-cta-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.login-cta-icon { font-size: 22px; flex-shrink: 0; }
+.login-cta-title { font-weight: 700; font-size: 14px; }
+.login-cta-sub   { font-size: 11px; opacity: 0.78; margin-top: 2px; }
+
 /* =================== SETTINGS BTN =================== */
 .settings-btn {
   width: 36px; height: 36px; border-radius: 12px; flex-shrink: 0;
@@ -777,8 +791,9 @@ body { display: flex; position: relative; }
 
   /* ── Topbar mobile ── */
   .topbar { gap: 8px; padding: 8px 10px; top: 8px; }
-  .search-wrap { padding: 7px 10px; min-width: 0; }
-  .lang-label { display: none; }                /* hide "EN" text, keep globe */
+  .search-wrap { display: none; }               /* sembunyikan search di mobile */
+  .settings-btn { display: none; }             /* settings ada di sidebar */
+  .lang-label { display: none; }               /* hide "EN" text, keep globe */
   .lang-btn { padding: 7px 10px; border-radius: 10px; min-width: 36px; justify-content: center; }
   .theme-toggle { width: 36px; height: 36px; border-radius: 10px; font-size: 15px; }
   .topbar-user-btn { display: flex; }           /* show user btn on mobile */

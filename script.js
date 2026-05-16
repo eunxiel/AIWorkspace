@@ -1232,6 +1232,9 @@ function _renderUser() {
   const loginBtn  = $("#loginMenuBtn");
   const logoutBtn = $("#logoutBtn");
   const mobileBtn = $("#topbarUserBtn");
+  const loginCta  = $("#sidebarLoginCta");
+  const chevron   = $("#userMenuBtn");
+
   if (_user) {
     if (_user.photo && avatarEl) {
       avatarEl.style.cssText = `background:url(${_user.photo}) center/cover no-repeat`;
@@ -1245,13 +1248,17 @@ function _renderUser() {
     if (loginBtn)  loginBtn.style.display  = "none";
     if (logoutBtn) logoutBtn.style.display = "";
     if (mobileBtn) { mobileBtn.textContent = "✓"; mobileBtn.classList.add("logged-in"); }
+    if (loginCta)  loginCta.style.display  = "none";
+    if (chevron)   { chevron.style.display = ""; chevron.title = ""; }
   } else {
-    if (avatarEl)  { avatarEl.style.cssText = ""; avatarEl.textContent = "?"; }
+    if (avatarEl)  { avatarEl.style.cssText = ""; avatarEl.textContent = "👤"; }
     if (nameEl)    nameEl.textContent   = "Guest";
-    if (statusEl)  statusEl.textContent = "Not signed in";
+    if (statusEl)  statusEl.textContent = "Tap to sign in";
     if (loginBtn)  loginBtn.style.display  = "";
     if (logoutBtn) logoutBtn.style.display = "none";
     if (mobileBtn) { mobileBtn.textContent = "👤"; mobileBtn.classList.remove("logged-in"); }
+    if (loginCta)  loginCta.style.display  = "";
+    if (chevron)   { chevron.style.display = "none"; }
   }
 }
 
@@ -1278,17 +1285,36 @@ function _showStep(n) {
 function _setErr(msg)    { const e = $("#authError"); if (e) e.textContent = msg; }
 function _setOtpErr(msg) { const e = $("#otpError");  if (e) e.textContent = msg; }
 
-/* ── User card dropdown ── */
-$("#userMenuBtn")?.addEventListener("click", e => {
-  e.stopPropagation();
-  const open = $("#userDropdown")?.classList.toggle("show");
-  $("#userMenuBtn")?.classList.toggle("open", !!open);
+/* ── User card — klik langsung login saat guest, dropdown saat login ── */
+$("#userCard")?.addEventListener("click", e => {
+  if (!_user) {
+    _openAuthModal();
+    return;
+  }
+  if (e.target.closest("#userMenuBtn") || e.target === $("#userCard")) {
+    const open = $("#userDropdown")?.classList.toggle("show");
+    $("#userMenuBtn")?.classList.toggle("open", !!open);
+  }
 });
 document.addEventListener("click", e => {
   if (!e.target.closest("#userCard") && !e.target.closest("#userDropdown")) {
     $("#userDropdown")?.classList.remove("show");
     $("#userMenuBtn")?.classList.remove("open");
   }
+});
+
+/* Sidebar login CTA */
+$("#loginCtaBtn")?.addEventListener("click", () => {
+  $("#sidebar").classList.remove("open");
+  $("#sidebarOverlay").classList.remove("show");
+  _openAuthModal();
+});
+
+/* Sidebar settings nav item */
+$("#sidebarSettingsItem")?.addEventListener("click", () => {
+  $("#sidebar").classList.remove("open");
+  $("#sidebarOverlay").classList.remove("show");
+  openSettings();
 });
 
 /* Open modal from dropdown */
