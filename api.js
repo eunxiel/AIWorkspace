@@ -1,29 +1,33 @@
 /* =========================================================
    API — Groq AI calls
-   Semua komunikasi ke Groq API ada di file ini.
    ========================================================= */
 
-const _cfg = window.AIW_CONFIG || {};
-const GROQ_API_KEY = _cfg.GROQ_API_KEY || "";
-const GROQ_MODEL   = _cfg.GROQ_MODEL   || "llama-3.3-70b-versatile";
-const GROQ_URL     = _cfg.GROQ_BASE_URL || "https://api.groq.com/openai/v1/chat/completions";
+function _getConfig() {
+  const cfg = window.AIW_CONFIG || {};
+  return {
+    key:   cfg.GROQ_API_KEY  || "",
+    model: cfg.GROQ_MODEL    || "llama-3.3-70b-versatile",
+    url:   cfg.GROQ_BASE_URL || "https://api.groq.com/openai/v1/chat/completions"
+  };
+}
 
-/* Kirim percakapan ke Groq dan kembalikan teks jawaban */
 async function callGemini(messageHistory) {
-  if (!GROQ_API_KEY) {
+  const { key, model, url } = _getConfig();
+
+  if (!key) {
     await new Promise(r => setTimeout(r, 900 + Math.random() * 600));
     return _mockResponse(messageHistory[messageHistory.length - 1]?.text || "");
   }
 
   try {
-    const res = await fetch(GROQ_URL, {
+    const res = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${GROQ_API_KEY}`
+        "Authorization": `Bearer ${key}`
       },
       body: JSON.stringify({
-        model: GROQ_MODEL,
+        model,
         messages: messageHistory.map(m => ({
           role: m.role === "user" ? "user" : "assistant",
           content: m.text
@@ -39,31 +43,31 @@ async function callGemini(messageHistory) {
       return `⚠️ API Error: ${errMsg}`;
     }
 
-    return data?.choices?.[0]?.message?.content
-      || "Sorry, I couldn't generate a response.";
+    return data?.choices?.[0]?.message?.content || "Sorry, I couldn't generate a response.";
   } catch (err) {
     console.error("Groq fetch error:", err);
     return "⚠️ Network error. Pastikan koneksi internet aktif dan API key valid.";
   }
 }
 
-/* Terjemahkan teks menggunakan Groq */
 async function translateWithGemini(text, fromLang, toLang) {
-  if (!GROQ_API_KEY) {
+  const { key, model, url } = _getConfig();
+
+  if (!key) {
     await new Promise(r => setTimeout(r, 700));
     return `[${toLang}] ${text}\n\n(Demo translation — tambahkan Groq API key untuk hasil nyata.)`;
   }
 
   try {
     const prompt = `Translate the following text from ${fromLang} to ${toLang}. Return only the translated text, nothing else.\n\nText: ${text}`;
-    const res = await fetch(GROQ_URL, {
+    const res = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${GROQ_API_KEY}`
+        "Authorization": `Bearer ${key}`
       },
       body: JSON.stringify({
-        model: GROQ_MODEL,
+        model,
         messages: [{ role: "user", content: prompt }]
       })
     });
@@ -82,17 +86,19 @@ async function translateWithGemini(text, fromLang, toLang) {
   }
 }
 
-/* Analisis gambar dengan Groq Vision → hasilkan prompt transformasi */
 async function analyzeImageWithGroq(base64Image, mimeType, userRequest) {
-  if (!GROQ_API_KEY) {
+  const { key, url } = _getConfig();
+
+  if (!key) {
     return `${userRequest}, high quality, detailed, 8k`;
   }
+
   try {
-    const res = await fetch(GROQ_URL, {
+    const res = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${GROQ_API_KEY}`
+        "Authorization": `Bearer ${key}`
       },
       body: JSON.stringify({
         model: "meta-llama/llama-4-scout-17b-16e-instruct",
@@ -106,6 +112,7 @@ async function analyzeImageWithGroq(base64Image, mimeType, userRequest) {
         }]
       })
     });
+
     const data = await res.json();
     if (!res.ok) { console.error("Groq Vision error:", data); return `${userRequest}, high quality, detailed`; }
     return data?.choices?.[0]?.message?.content?.trim() || `${userRequest}, high quality`;
