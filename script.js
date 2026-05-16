@@ -43,6 +43,12 @@ $("#menuBtn")?.addEventListener("click", () => {
   $("#sidebar").classList.add("open");
   $("#sidebarOverlay").classList.add("show");
 });
+
+/* Mobile topbar user button — open sidebar (user card + login are there) */
+$("#topbarUserBtn")?.addEventListener("click", () => {
+  $("#sidebar").classList.add("open");
+  $("#sidebarOverlay").classList.add("show");
+});
 $("#sidebarClose")?.addEventListener("click", () => {
   $("#sidebar").classList.remove("open");
   $("#sidebarOverlay").classList.remove("show");
@@ -1154,6 +1160,7 @@ function _renderUser() {
   const statusEl  = $("#userStatusEl");
   const loginBtn  = $("#loginMenuBtn");
   const logoutBtn = $("#logoutBtn");
+  const mobileBtn = $("#topbarUserBtn");
   if (_user) {
     if (_user.photo && avatarEl) {
       avatarEl.style.cssText = `background:url(${_user.photo}) center/cover no-repeat`;
@@ -1166,12 +1173,14 @@ function _renderUser() {
     if (statusEl)  statusEl.textContent = _user.email;
     if (loginBtn)  loginBtn.style.display  = "none";
     if (logoutBtn) logoutBtn.style.display = "";
+    if (mobileBtn) { mobileBtn.textContent = "✓"; mobileBtn.classList.add("logged-in"); }
   } else {
     if (avatarEl)  { avatarEl.style.cssText = ""; avatarEl.textContent = "?"; }
     if (nameEl)    nameEl.textContent   = "Guest";
     if (statusEl)  statusEl.textContent = "Not signed in";
     if (loginBtn)  loginBtn.style.display  = "";
     if (logoutBtn) logoutBtn.style.display = "none";
+    if (mobileBtn) { mobileBtn.textContent = "👤"; mobileBtn.classList.remove("logged-in"); }
   }
 }
 
