@@ -24,6 +24,11 @@ function showPage(pageId) {
   $("#sidebar")?.classList.remove("open");
   $("#sidebarOverlay")?.classList.remove("show");
 
+  // show one-time hint when entering chat without an API key
+  if (pageId === "chat" && !getGroqApiKey() && chatWindow && chatWindow.children.length === 0) {
+    appendMessage("ai", "👋 Halo! Saya dalam mode demo. Ketik /setkey gsk_xxxx untuk mengaktifkan AI nyata — dapatkan key gratis di console.groq.com");
+  }
+
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 

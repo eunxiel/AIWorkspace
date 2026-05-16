@@ -148,5 +148,5 @@ function _mockResponse(prompt) {
     return "Sure! I can help draft notes, summarize docs, translate text, generate slide outlines, and chat about ideas. What would you like to start with?";
   if (/translate|terjemah/.test(lower))
     return "Open the Translation page and I'll translate text between languages with context.";
-  return `Here's a quick thought on "${prompt}": this is a demo response. Add your Groq API key in config.js to get real AI answers. ✨`;
+  return `Saya dalam mode demo. Untuk jawaban AI nyata, ketik /setkey gsk_xxxx di chat ini. Dapatkan key gratis di console.groq.com 🔑`;
 }
