@@ -64,7 +64,58 @@ $("#sidebarOverlay")?.addEventListener("click", () => {
 });
 
 /* =========================================================
-   3. THEME TOGGLE
+   3. SETTINGS MODAL — Groq API Key
+   ========================================================= */
+const settingsOverlay = $("#settingsOverlay");
+
+function openSettings() {
+  const current = getGroqApiKey();
+  const input = $("#settingsApiKey");
+  if (input) input.value = current || "";
+  _updateSettingsStatus();
+  settingsOverlay?.classList.add("show");
+}
+function closeSettings() {
+  settingsOverlay?.classList.remove("show");
+}
+function _updateSettingsStatus() {
+  const el = $("#settingsStatus");
+  if (!el) return;
+  const key = getGroqApiKey();
+  if (key) {
+    el.textContent = "✅ API key aktif — AI chat siap digunakan";
+    el.className = "settings-status ok";
+  } else {
+    el.textContent = "❌ Belum ada key — chat berjalan dalam mode demo";
+    el.className = "settings-status empty";
+  }
+}
+
+$("#settingsBtn")?.addEventListener("click", openSettings);
+$("#closeSettingsBtn")?.addEventListener("click", closeSettings);
+$("#cancelSettingsBtn")?.addEventListener("click", closeSettings);
+settingsOverlay?.addEventListener("click", e => { if (e.target === settingsOverlay) closeSettings(); });
+
+$("#toggleKeyVisBtn")?.addEventListener("click", () => {
+  const input = $("#settingsApiKey");
+  if (!input) return;
+  input.type = input.type === "password" ? "text" : "password";
+});
+
+$("#saveSettingsBtn")?.addEventListener("click", () => {
+  const val = ($("#settingsApiKey")?.value || "").trim();
+  if (val) {
+    setGroqApiKey(val);
+    _updateSettingsStatus();
+    setTimeout(closeSettings, 800);
+  } else {
+    localStorage.removeItem("aiw-groq-key");
+    _updateSettingsStatus();
+  }
+});
+
+/* =========================================================
+   3b. THEME TOGGLE
    ========================================================= */
 const themeBtn = $("#themeToggle");
 const savedTheme = localStorage.getItem("aiw-theme") || "light";

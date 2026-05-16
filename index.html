@@ -82,6 +82,7 @@
         </div>
       </div>
       <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
+      <button class="settings-btn" id="settingsBtn" aria-label="Settings">⚙️</button>
       <button class="topbar-user-btn" id="topbarUserBtn" aria-label="Account">👤</button>
     </header>
 
@@ -450,6 +451,31 @@
       <div class="modal-actions">
         <button class="modal-cancel">Cancel</button>
         <button class="primary-btn" id="saveNoteBtn">Save Note</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SETTINGS MODAL ===================== -->
+  <div class="modal-overlay" id="settingsOverlay">
+    <div class="modal-box settings-box">
+      <div class="modal-header">
+        <h3>⚙️ Settings</h3>
+        <button class="modal-close" id="closeSettingsBtn">✕</button>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-label">Groq API Key</div>
+        <div class="settings-sub">Dapatkan key gratis di <a href="https://console.groq.com/keys" target="_blank" class="settings-link">console.groq.com</a></div>
+        <div class="settings-input-row">
+          <input type="password" id="settingsApiKey" class="modal-input" placeholder="gsk_..." autocomplete="off" />
+          <button class="settings-eye-btn" id="toggleKeyVisBtn">👁</button>
+        </div>
+        <div class="settings-status" id="settingsStatus"></div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="modal-cancel" id="cancelSettingsBtn">Batal</button>
+        <button class="primary-btn" id="saveSettingsBtn">Simpan</button>
       </div>
     </div>
   </div>
