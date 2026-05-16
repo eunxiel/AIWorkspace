@@ -4,8 +4,9 @@
 
 function _getConfig() {
   const cfg = window.AIW_CONFIG || {};
-  /* localStorage key overrides config.js — useful for deployed/hosted version */
-  const key = localStorage.getItem("aiw-groq-key") || cfg.GROQ_API_KEY || "";
+  const stored = localStorage.getItem("aiw-groq-key") || "";
+  /* hanya pakai localStorage jika key valid (harus diawali gsk_) */
+  const key = (stored && stored.startsWith("gsk_")) ? stored : (cfg.GROQ_API_KEY || "");
   return {
     key,
     model: cfg.GROQ_MODEL    || "llama-3.3-70b-versatile",
