@@ -115,9 +115,64 @@ async function typeText(element, text, speed = 18) {
   }
 }
 
+/* Show API key setup card inside chat window */
+function _showApiKeyPrompt() {
+  if ($("#apiKeyCard")) return; // already shown
+  const card = document.createElement("div");
+  card.id = "apiKeyCard";
+  card.className = "msg ai api-key-card";
+  card.innerHTML = `
+    <div class="ak-title">🔑 Groq API Key diperlukan</div>
+    <div class="ak-sub">Masukkan API key kamu untuk mengaktifkan AI chat.<br>Dapatkan gratis di <b>console.groq.com</b></div>
+    <div class="ak-row">
+      <input class="ak-input" id="akInput" type="password" placeholder="gsk_..." autocomplete="off" />
+      <button class="ak-btn" id="akSaveBtn">Simpan</button>
+    </div>
+    <div class="ak-hint" id="akHint"></div>
+  `;
+  chatWindow.appendChild(card);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+
+  $("#akSaveBtn")?.addEventListener("click", _saveKeyFromCard);
+  $("#akInput")?.addEventListener("keydown", (e) => { if (e.key === "Enter") _saveKeyFromCard(); });
+}
+
+function _saveKeyFromCard() {
+  const val = $("#akInput")?.value?.trim();
+  if (!val || !val.startsWith("gsk_")) {
+    const hint = $("#akHint");
+    if (hint) { hint.textContent = "⚠️ Key harus diawali dengan gsk_"; hint.style.color = "#ef4444"; }
+    return;
+  }
+  setGroqApiKey(val);
+  const card = $("#apiKeyCard");
+  if (card) card.remove();
+  appendMessage("ai", "✅ API key berhasil disimpan! Sekarang kamu bisa mulai chat.");
+}
+
 async function sendChat() {
   const text = chatInput.value.trim();
   if (!text) return;
+
+  /* /setkey command */
+  if (text.startsWith("/setkey ")) {
+    const key = text.slice(8).trim();
+    chatInput.value = "";
+    if (setGroqApiKey(key)) {
+      appendMessage("user", "/setkey ••••••••");
+      appendMessage("ai", "✅ API key berhasil disimpan!");
+    } else {
+      appendMessage("ai", "⚠️ Key tidak valid. Contoh: /setkey gsk_xxxx");
+    }
+    return;
+  }
+
+  /* Block send if no key — show setup card instead */
+  if (!getGroqApiKey()) {
+    _showApiKeyPrompt();
+    return;
+  }
+
   chatInput.value = "";
   sendBtn.disabled = true;
 

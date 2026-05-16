@@ -4,11 +4,26 @@
 
 function _getConfig() {
   const cfg = window.AIW_CONFIG || {};
+  /* localStorage key overrides config.js — useful for deployed/hosted version */
+  const key = localStorage.getItem("aiw-groq-key") || cfg.GROQ_API_KEY || "";
   return {
-    key:   cfg.GROQ_API_KEY  || "",
+    key,
     model: cfg.GROQ_MODEL    || "llama-3.3-70b-versatile",
     url:   cfg.GROQ_BASE_URL || "https://api.groq.com/openai/v1/chat/completions"
   };
+}
+
+/* Save key to localStorage — called from UI */
+function setGroqApiKey(key) {
+  if (key && key.trim()) {
+    localStorage.setItem("aiw-groq-key", key.trim());
+    return true;
+  }
+  return false;
+}
+
+function getGroqApiKey() {
+  return localStorage.getItem("aiw-groq-key") || (window.AIW_CONFIG || {}).GROQ_API_KEY || "";
 }
 
 async function callGemini(messageHistory) {
