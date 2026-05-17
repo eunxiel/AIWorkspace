@@ -373,6 +373,105 @@
 
     </section>
 
+    <!-- ============ PAGE: PROFILE ============ -->
+    <section class="page" id="page-profile">
+      <div class="profile-hero">
+        <div class="profile-avatar-lg" id="profileAvatarLg">👤</div>
+        <div class="profile-name-lg" id="profileNameLg">Profile</div>
+        <div class="profile-email-lg" id="profileEmailLg">Tap to sign in</div>
+      </div>
+
+      <!-- Account -->
+      <div class="settings-group">
+        <div class="settings-group-title">Account</div>
+        <div class="settings-list">
+          <div class="settings-item">
+            <div class="settings-item-left"><span class="si-icon">✉️</span><span>Email</span></div>
+            <span class="si-value" id="profileEmailVal">—</span>
+          </div>
+          <div class="settings-item">
+            <div class="settings-item-left"><span class="si-icon">👪</span><span>Parental Control</span></div>
+            <label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" id="toggleParental"><span class="toggle-track"></span></label>
+          </div>
+          <div class="settings-item" id="dataControlItem">
+            <div class="settings-item-left"><span class="si-icon">🗂️</span><span>Data Control</span></div>
+            <span class="si-arrow">›</span>
+          </div>
+          <div class="settings-item" id="archiveChatItem">
+            <div class="settings-item-left"><span class="si-icon">💬</span><span>Archive Chat</span></div>
+            <span class="si-arrow">›</span>
+          </div>
+          <div class="settings-item">
+            <div class="settings-item-left"><span class="si-icon">🔒</span><span>Security</span></div>
+            <span class="si-arrow">›</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Web -->
+      <div class="settings-group">
+        <div class="settings-group-title">Web</div>
+        <div class="settings-list">
+          <div class="settings-item">
+            <div class="settings-item-left"><span class="si-icon">🌐</span><span>Web Language</span></div>
+            <select class="si-select" id="profileLangSelect">
+              <option value="en">English</option>
+              <option value="id">Indonesia</option>
+              <option value="th">ภาษาไทย</option>
+              <option value="zh">中文</option>
+              <option value="ja">日本語</option>
+              <option value="ko">한국어</option>
+              <option value="vi">Tiếng Việt</option>
+            </select>
+          </div>
+          <div class="settings-item">
+            <div class="settings-item-left"><span class="si-icon">🌙</span><span>Dark Mode</span></div>
+            <label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" id="toggleDarkMode"><span class="toggle-track"></span></label>
+          </div>
+          <div class="settings-item">
+            <div class="settings-item-left"><span class="si-icon">🎨</span><span>Accent Color</span></div>
+            <div class="accent-swatches" id="accentSwatches">
+              <button class="swatch" data-color="#2563eb" style="background:#2563eb" title="Blue"></button>
+              <button class="swatch" data-color="#7c3aed" style="background:#7c3aed" title="Purple"></button>
+              <button class="swatch" data-color="#0ea5e9" style="background:#0ea5e9" title="Sky"></button>
+              <button class="swatch" data-color="#10b981" style="background:#10b981" title="Emerald"></button>
+              <button class="swatch" data-color="#f59e0b" style="background:#f59e0b" title="Amber"></button>
+              <button class="swatch" data-color="#ef4444" style="background:#ef4444" title="Rose"></button>
+            </div>
+          </div>
+          <div class="settings-item">
+            <div class="settings-item-left"><span class="si-icon">✏️</span><span>Correct Spelling Automatically</span></div>
+            <label class="toggle-switch" onclick="event.stopPropagation()"><input type="checkbox" id="toggleSpelling" checked><span class="toggle-track"></span></label>
+          </div>
+        </div>
+      </div>
+
+      <!-- About -->
+      <div class="settings-group">
+        <div class="settings-group-title">About</div>
+        <div class="settings-list">
+          <div class="settings-item">
+            <div class="settings-item-left"><span class="si-icon">🐛</span><span>Report Bug</span></div>
+            <span class="si-arrow">›</span>
+          </div>
+          <div class="settings-item">
+            <div class="settings-item-left"><span class="si-icon">❓</span><span>Help Center</span></div>
+            <span class="si-arrow">›</span>
+          </div>
+          <div class="settings-item">
+            <div class="settings-item-left"><span class="si-icon">📋</span><span>Terms of Use</span></div>
+            <span class="si-arrow">›</span>
+          </div>
+          <div class="settings-item">
+            <div class="settings-item-left"><span class="si-icon">🔐</span><span>Privacy Policy</span></div>
+            <span class="si-arrow">›</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="profile-signout-btn" id="profileLogoutBtn" style="display:none">Sign Out</button>
+    </section>
+
     <!-- ============ BOTTOM NAV ============ -->
     <nav class="bottom-nav">
       <button class="bn-item active" data-page="home" aria-label="Home">🏠</button>

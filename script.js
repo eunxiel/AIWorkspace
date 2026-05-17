@@ -131,6 +131,8 @@ themeBtn?.addEventListener("click", () => {
     localStorage.setItem("aiw-theme", "dark");
     themeBtn.textContent = "☀️";
   }
+  const tdm = $("#toggleDarkMode");
+  if (tdm) tdm.checked = !isDark;
 });
 if (savedTheme === "dark") themeBtn.textContent = "☀️";
 
@@ -705,6 +707,10 @@ function applyLang(code) {
   set("#saveNoteBtn", "save_note");
   setAll(".modal-cancel", "cancel");
 
+  // Sync profile language select
+  const pls = $("#profileLangSelect");
+  if (pls) pls.value = code;
+
   // Re-render dynamic elements so "new note / new doc" text updates
   renderNotes(); renderDocs();
 }
@@ -1223,7 +1229,7 @@ let _recaptchaVerifier  = null;
 /* Restore cached session when Firebase not configured */
 if (!_fbAuth) _user = JSON.parse(localStorage.getItem("aiw-user") || "null");
 
-/* Update sidebar user card */
+/* Update sidebar user card + profile page */
 function _renderUser() {
   const avatarEl  = $("#userAvatarEl");
   const nameEl    = $("#userNameEl");
@@ -1233,14 +1239,20 @@ function _renderUser() {
   const mobileBtn = $("#topbarUserBtn");
   const loginCta  = $("#sidebarLoginCta");
   const chevron   = $("#userMenuBtn");
+  const pAvatar   = $("#profileAvatarLg");
+  const pName     = $("#profileNameLg");
+  const pEmail    = $("#profileEmailLg");
+  const pEmailVal = $("#profileEmailVal");
+  const pSignout  = $("#profileLogoutBtn");
 
   if (_user) {
+    const initials = _user.name.trim().split(/\s+/).map(w => w[0]).join("").slice(0, 2).toUpperCase();
     if (_user.photo && avatarEl) {
       avatarEl.style.cssText = `background:url(${_user.photo}) center/cover no-repeat`;
       avatarEl.textContent = "";
     } else if (avatarEl) {
       avatarEl.style.cssText = "";
-      avatarEl.textContent = _user.name.trim().split(/\s+/).map(w => w[0]).join("").slice(0, 2).toUpperCase();
+      avatarEl.textContent = initials;
     }
     if (nameEl)    nameEl.textContent   = _user.name;
     if (statusEl)  statusEl.textContent = _user.email;
@@ -1249,6 +1261,13 @@ function _renderUser() {
     if (mobileBtn) { mobileBtn.textContent = "✓"; mobileBtn.classList.add("logged-in"); }
     if (loginCta)  loginCta.style.display  = "none";
     if (chevron)   { chevron.style.display = ""; chevron.title = ""; }
+    // Profile page
+    if (_user.photo && pAvatar) { pAvatar.style.cssText = `background:url(${_user.photo}) center/cover no-repeat`; pAvatar.textContent = ""; }
+    else if (pAvatar) { pAvatar.style.cssText = ""; pAvatar.textContent = initials; }
+    if (pName)    pName.textContent    = _user.name;
+    if (pEmail)   pEmail.textContent   = _user.email;
+    if (pEmailVal) pEmailVal.textContent = _user.email;
+    if (pSignout)  pSignout.style.display = "";
   } else {
     if (avatarEl)  { avatarEl.style.cssText = ""; avatarEl.textContent = "👤"; }
     if (nameEl)    nameEl.textContent   = "Profile";
@@ -1258,6 +1277,12 @@ function _renderUser() {
     if (mobileBtn) { mobileBtn.textContent = "👤"; mobileBtn.classList.remove("logged-in"); }
     if (loginCta)  loginCta.style.display  = "";
     if (chevron)   { chevron.style.display = "none"; }
+    // Profile page
+    if (pAvatar)   { pAvatar.style.cssText = ""; pAvatar.textContent = "👤"; }
+    if (pName)     pName.textContent    = "Profile";
+    if (pEmail)    pEmail.textContent   = "Tap to sign in";
+    if (pEmailVal) pEmailVal.textContent = "—";
+    if (pSignout)  pSignout.style.display = "none";
   }
 }
 
@@ -1284,16 +1309,10 @@ function _showStep(n) {
 function _setErr(msg)    { const e = $("#authError"); if (e) e.textContent = msg; }
 function _setOtpErr(msg) { const e = $("#otpError");  if (e) e.textContent = msg; }
 
-/* ── User card — klik langsung login saat guest, dropdown saat login ── */
-$("#userCard")?.addEventListener("click", e => {
-  if (!_user) {
-    _openAuthModal();
-    return;
-  }
-  if (e.target.closest("#userMenuBtn") || e.target === $("#userCard")) {
-    const open = $("#userDropdown")?.classList.toggle("show");
-    $("#userMenuBtn")?.classList.toggle("open", !!open);
-  }
+/* ── User card — klik langsung login saat guest, profile saat login ── */
+$("#userCard")?.addEventListener("click", () => {
+  if (!_user) { _openAuthModal(); return; }
+  showPage("profile");
 });
 document.addEventListener("click", e => {
   if (!e.target.closest("#userCard") && !e.target.closest("#userDropdown")) {
@@ -1420,9 +1439,79 @@ $("#authPhone")?.addEventListener("keydown", e => { if (e.key === "Enter") $("#s
 $("#otpInput")?.addEventListener("keydown",  e => { if (e.key === "Enter") $("#verifyOtpBtn")?.click(); });
 
 /* =========================================================
+   16.5. PROFILE PAGE HANDLERS
+   ========================================================= */
+
+/* Accent color */
+const _ACCENT_DEFAULT = "#2563eb";
+let _accentColor = localStorage.getItem("aiw-accent") || _ACCENT_DEFAULT;
+
+function _applyAccent(color) {
+  _accentColor = color;
+  document.documentElement.style.setProperty("--primary", color);
+  localStorage.setItem("aiw-accent", color);
+  $$(".swatch").forEach(s => s.classList.toggle("active", s.dataset.color === color));
+}
+
+$$(".swatch").forEach(s => {
+  s.addEventListener("click", e => { e.stopPropagation(); _applyAccent(s.dataset.color); });
+});
+
+/* Dark mode toggle */
+const _profileDarkToggle = $("#toggleDarkMode");
+if (_profileDarkToggle) {
+  _profileDarkToggle.checked = (localStorage.getItem("aiw-theme") || "dark") === "dark";
+  _profileDarkToggle.addEventListener("change", function() {
+    if (this.checked) {
+      document.documentElement.setAttribute("data-theme", "dark");
+      localStorage.setItem("aiw-theme", "dark");
+      if (themeBtn) themeBtn.textContent = "☀️";
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+      localStorage.setItem("aiw-theme", "light");
+      if (themeBtn) themeBtn.textContent = "🌙";
+    }
+  });
+}
+
+/* Spelling toggle */
+const _savedSpelling = localStorage.getItem("aiw-spelling");
+if (_savedSpelling !== null) {
+  const _spToggle = $("#toggleSpelling");
+  if (_spToggle) _spToggle.checked = _savedSpelling === "1";
+}
+$("#toggleSpelling")?.addEventListener("change", function() {
+  const editor = $("#editorContent");
+  if (editor) editor.spellcheck = this.checked;
+  localStorage.setItem("aiw-spelling", this.checked ? "1" : "0");
+});
+
+/* Web language select in profile */
+$("#profileLangSelect")?.addEventListener("change", function() {
+  applyLang(this.value);
+});
+
+/* Archive chat */
+$("#archiveChatItem")?.addEventListener("click", () => {
+  if (!confirm("Archive all chat messages?")) return;
+  messageHistory.length = 0;
+  if (chatWindow) chatWindow.innerHTML = "";
+});
+
+/* Profile sign out */
+$("#profileLogoutBtn")?.addEventListener("click", async () => {
+  if (_fbAuth) await _fbAuth.signOut().catch(() => {});
+  _user = null;
+  localStorage.removeItem("aiw-user");
+  _renderUser();
+  showPage("home");
+});
+
+/* =========================================================
    16. INIT
    ========================================================= */
 renderSlides(slides);
 applyLang(_lang);
 _renderUser();
+_applyAccent(_accentColor);
 console.log("%cAI Workspace ready ✨", "color:#3b82f6;font-weight:bold;font-size:14px");
