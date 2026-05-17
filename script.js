@@ -998,6 +998,7 @@ document.addEventListener("click", e => {
    14. SPEECH RECOGNITION — Chat & Notes
    ========================================================= */
 const _SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const _VN_ICON = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><rect x="0" y="7" width="3" height="6" rx="1.5"/><rect x="4.5" y="3" width="3" height="14" rx="1.5"/><rect x="9" y="5" width="3" height="10" rx="1.5"/><rect x="13.5" y="1" width="3" height="18" rx="1.5"/><rect x="17" y="4" width="3" height="12" rx="1.5"/></svg>';
 
 function _speechLang() {
   return ({ en:"en-US", id:"id-ID", th:"th-TH", zh:"zh-CN", ja:"ja-JP", ko:"ko-KR", vi:"vi-VN" })[_lang] || "en-US";
@@ -1061,7 +1062,7 @@ chatMicBtn?.addEventListener("click", () => {
   /* Selesai (otomatis atau manual) */
   _chatRec.onend = () => {
     chatMicBtn.classList.remove("mic-active");
-    chatMicBtn.textContent = "🎤";
+    chatMicBtn.innerHTML = _VN_ICON;
     chatInput.placeholder  = _t("chat_ph") || "Ask anything, create anything...";
     const captured = chatInput.value.trim();
     _chatRec = null;
@@ -1130,7 +1131,7 @@ noteMicBtn?.addEventListener("click", () => {
         try { _startNoteRec(); return; } catch {}
       }
       noteMicBtn.classList.remove("mic-active");
-      noteMicBtn.textContent = "🎤";
+      noteMicBtn.innerHTML = _VN_ICON;
       _noteRec   = null;
       _noteActive = false;
     };
