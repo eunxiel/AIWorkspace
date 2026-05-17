@@ -750,9 +750,7 @@ $$(".modal-cancel, .modal-close").forEach(btn => {
    10. NOTES
    ========================================================= */
 const DEFAULT_NOTES = [
-  { id:1, title:"Meeting Recap", body:"Discussed product roadmap, Q3 milestones, and team velocity improvements...", date:"Today" },
-  { id:2, title:"Research Notes", body:"Glassmorphism in modern UI: pros, cons, and accessibility considerations...", date:"Yesterday" },
-  { id:3, title:"Ideas & Brainstorms", body:"A workspace that feels alive — soft motion, ambient orbs, focus mode...", date:"2 days ago" }
+  { id:1, title:"Welcome Note", body:"Start writing your first note here. Click the + button to add more notes!", date:"Today" }
 ];
 let notes = JSON.parse(localStorage.getItem("aiw-notes") || "null") ?? DEFAULT_NOTES;
 
@@ -792,9 +790,7 @@ $("#saveNoteBtn")?.addEventListener("click", () => {
 const DOC_ICONS = { txt:"📄", md:"📝", pdf:"📕", docx:"📘", doc:"📘" };
 
 const DEFAULT_DOCS = [
-  { id:1, title:"Project Proposal",  content:"<h2>Project Proposal</h2><p>Click to start editing this document with AI assistance...</p>", type:"txt", edited:"2h ago",    words:14 },
-  { id:2, title:"Marketing Plan",    content:"<h2>Marketing Plan</h2><p>Define your marketing strategy here...</p>",                       type:"txt", edited:"Yesterday", words:10 },
-  { id:3, title:"Technical Specs",   content:"<h2>Technical Specifications</h2><p>Document your technical requirements...</p>",              type:"txt", edited:"3 days ago",words:9  }
+  { id:1, title:"Getting Started", content:"<h2>Getting Started</h2><p>Click to start editing this document with AI assistance. Use the toolbar above to format text, or try the AI tools to summarize, improve, or expand your writing.</p>", type:"txt", edited:"Today", words:28 }
 ];
 
 let docs = (() => {
