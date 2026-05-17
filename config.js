@@ -8,10 +8,9 @@
 
 window.AIW_CONFIG = {
   // ── Groq API ──────────────────────────────────────────
-  // Dapatkan di: https://console.groq.com/keys
-  GROQ_API_KEY: "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",
+  // Key sekarang disimpan aman di Cloudflare Worker (lihat worker.js)
+  // Tidak perlu diisi di sini.
   GROQ_MODEL: "llama-3.3-70b-versatile",
-  GROQ_BASE_URL: "https://api.groq.com/openai/v1/chat/completions",
 
   // ── Firebase Auth ──────────────────────────────────────
   // Langkah setup:
