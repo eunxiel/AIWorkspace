@@ -401,7 +401,7 @@
             <div class="settings-item-left"><span class="si-icon">💬</span><span>Archive Chat</span></div>
             <span class="si-arrow">›</span>
           </div>
-          <div class="settings-item">
+          <div class="settings-item" id="securityItem">
             <div class="settings-item-left"><span class="si-icon">🔒</span><span>Security</span></div>
             <span class="si-arrow">›</span>
           </div>
@@ -450,19 +450,19 @@
       <div class="settings-group">
         <div class="settings-group-title">About</div>
         <div class="settings-list">
-          <div class="settings-item">
+          <div class="settings-item" id="reportBugItem">
             <div class="settings-item-left"><span class="si-icon">🐛</span><span>Report Bug</span></div>
             <span class="si-arrow">›</span>
           </div>
-          <div class="settings-item">
+          <div class="settings-item" id="helpCenterItem">
             <div class="settings-item-left"><span class="si-icon">❓</span><span>Help Center</span></div>
             <span class="si-arrow">›</span>
           </div>
-          <div class="settings-item">
+          <div class="settings-item" id="termsItem">
             <div class="settings-item-left"><span class="si-icon">📋</span><span>Terms of Use</span></div>
             <span class="si-arrow">›</span>
           </div>
-          <div class="settings-item">
+          <div class="settings-item" id="privacyItem">
             <div class="settings-item-left"><span class="si-icon">🔐</span><span>Privacy Policy</span></div>
             <span class="si-arrow">›</span>
           </div>
@@ -593,6 +593,17 @@
   </div>
 
   <!-- PDF.js & Mammoth.js for file parsing -->
+  <!-- PROFILE INFO MODAL -->
+  <div class="modal-overlay" id="profileInfoOverlay">
+    <div class="modal-box profile-info-box">
+      <div class="modal-header">
+        <h3 id="profileInfoTitle"></h3>
+        <button class="modal-close" id="profileInfoClose">✕</button>
+      </div>
+      <div class="profile-info-body" id="profileInfoBody"></div>
+    </div>
+  </div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 

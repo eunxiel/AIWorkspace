@@ -1442,6 +1442,161 @@ $("#otpInput")?.addEventListener("keydown",  e => { if (e.key === "Enter") $("#v
    16.5. PROFILE PAGE HANDLERS
    ========================================================= */
 
+/* Generic profile info modal */
+function _openProfileModal(title, html) {
+  const t = $("#profileInfoTitle"); const b = $("#profileInfoBody");
+  if (t) t.textContent = title;
+  if (b) b.innerHTML = html;
+  $("#profileInfoOverlay")?.classList.add("show");
+}
+function _closeProfileModal() { $("#profileInfoOverlay")?.classList.remove("show"); }
+$("#profileInfoClose")?.addEventListener("click", _closeProfileModal);
+$("#profileInfoOverlay")?.addEventListener("click", e => { if (e.target === $("#profileInfoOverlay")) _closeProfileModal(); });
+
+/* Event delegation inside modal body (Data Control actions) */
+$("#profileInfoBody")?.addEventListener("click", async e => {
+  const btn = e.target.closest("[data-action]");
+  if (!btn) return;
+  const action = btn.dataset.action;
+  const done = () => { btn.textContent = "Done ✓"; btn.disabled = true; };
+  if (action === "clear-chat") {
+    messageHistory.length = 0; if (chatWindow) chatWindow.innerHTML = ""; done();
+  } else if (action === "clear-notes") {
+    notes = []; saveNotes(); renderNotes(); done();
+  } else if (action === "clear-docs") {
+    docs = []; saveDocs(); renderDocs(); done();
+  } else if (action === "clear-slides") {
+    slides = JSON.parse(JSON.stringify(DEFAULT_SLIDES)); saveSlides(); renderSlides(slides); done();
+  } else if (action === "clear-key") {
+    localStorage.removeItem("aiw-groq-key"); done();
+  } else if (action === "clear-all") {
+    if (!confirm("Reset ALL data? This cannot be undone.")) return;
+    ["aiw-notes","aiw-docs","aiw-slides","aiw-groq-key"].forEach(k => localStorage.removeItem(k));
+    notes = JSON.parse(JSON.stringify(DEFAULT_NOTES));
+    docs  = JSON.parse(JSON.stringify(DEFAULT_DOCS));
+    slides = JSON.parse(JSON.stringify(DEFAULT_SLIDES));
+    messageHistory.length = 0;
+    if (chatWindow) chatWindow.innerHTML = "";
+    saveNotes(); saveDocs(); saveSlides(); renderNotes(); renderDocs(); renderSlides(slides);
+    _closeProfileModal();
+  } else if (action === "sec-signout") {
+    if (_fbAuth) await _fbAuth.signOut().catch(() => {});
+    _user = null; localStorage.removeItem("aiw-user");
+    _renderUser(); _closeProfileModal(); showPage("home");
+  } else if (action === "send-bug") {
+    const desc = ($("#bugDesc")?.value || "").trim();
+    if (!desc) { alert("Please describe the bug."); return; }
+    window.open(`mailto:?subject=AI Workspace Bug Report&body=${encodeURIComponent(desc)}`, "_blank");
+  }
+});
+
+/* Data Control */
+$("#dataControlItem")?.addEventListener("click", () => {
+  _openProfileModal("Data Control", `
+    <div class="data-ctrl-list">
+      <div class="data-ctrl-item">
+        <div><div class="data-ctrl-label">Chat History</div><div class="data-ctrl-sub">Clear all messages</div></div>
+        <button class="data-ctrl-btn" data-action="clear-chat">Clear</button>
+      </div>
+      <div class="data-ctrl-item">
+        <div><div class="data-ctrl-label">Notes</div><div class="data-ctrl-sub">${notes.length} note${notes.length !== 1 ? "s" : ""} stored</div></div>
+        <button class="data-ctrl-btn" data-action="clear-notes">Clear</button>
+      </div>
+      <div class="data-ctrl-item">
+        <div><div class="data-ctrl-label">Documents</div><div class="data-ctrl-sub">${docs.length} document${docs.length !== 1 ? "s" : ""} stored</div></div>
+        <button class="data-ctrl-btn" data-action="clear-docs">Clear</button>
+      </div>
+      <div class="data-ctrl-item">
+        <div><div class="data-ctrl-label">Slides</div><div class="data-ctrl-sub">${slides.length} slide${slides.length !== 1 ? "s" : ""} stored</div></div>
+        <button class="data-ctrl-btn" data-action="clear-slides">Clear</button>
+      </div>
+      <div class="data-ctrl-item">
+        <div><div class="data-ctrl-label">API Key</div><div class="data-ctrl-sub">${getGroqApiKey() ? "Key saved" : "No key saved"}</div></div>
+        <button class="data-ctrl-btn" data-action="clear-key">Remove</button>
+      </div>
+      <button class="data-ctrl-danger" data-action="clear-all">⚠️ Reset All Data</button>
+    </div>`);
+});
+
+/* Security */
+$("#securityItem")?.addEventListener("click", () => {
+  const method = _user ? (_user.email?.includes("@") ? "Google" : "Phone OTP") : "—";
+  _openProfileModal("Security", `
+    <div class="sec-info">
+      <div class="sec-row"><span class="sec-label">Sign-in method</span><span class="sec-val">${escHtml(method)}</span></div>
+      <div class="sec-row"><span class="sec-label">Account</span><span class="sec-val">${escHtml(_user?.email || "—")}</span></div>
+      <div class="sec-row"><span class="sec-label">Name</span><span class="sec-val">${escHtml(_user?.name || "—")}</span></div>
+    </div>
+    ${_user ? `<button class="profile-signout-btn" data-action="sec-signout" style="margin-top:16px;display:block;width:100%">Sign Out</button>` : ""}`);
+});
+
+/* Report Bug */
+$("#reportBugItem")?.addEventListener("click", () => {
+  _openProfileModal("Report Bug", `
+    <p style="font-size:.88rem;color:var(--text-2);margin-bottom:8px">Describe the bug you encountered and what you expected to happen:</p>
+    <textarea id="bugDesc" class="report-textarea" placeholder="What happened? What did you expect?"></textarea>
+    <button class="primary-btn" data-action="send-bug" style="width:100%;margin-top:12px">📧 Send via Email</button>`);
+});
+
+/* Help Center */
+$("#helpCenterItem")?.addEventListener("click", () => {
+  _openProfileModal("Help Center", `
+    <div class="help-list">
+      <div class="help-item">
+        <div class="help-q">How do I use AI Chat?</div>
+        <div class="help-a">Type your question and press Enter or the send button. Add a Groq API key in Settings for real AI responses.</div>
+      </div>
+      <div class="help-item">
+        <div class="help-q">How do I add a Groq API key?</div>
+        <div class="help-a">Open Settings (⚙️ in sidebar), paste your key starting with gsk_, and click Save. Get a free key at console.groq.com.</div>
+      </div>
+      <div class="help-item">
+        <div class="help-q">How do I create a note?</div>
+        <div class="help-a">Go to AI Notes and click the + button. You can also use the mic button for voice input.</div>
+      </div>
+      <div class="help-item">
+        <div class="help-q">How does Translation work?</div>
+        <div class="help-a">Go to Translation, type your text, select source and target languages, then click Translate.</div>
+      </div>
+      <div class="help-item">
+        <div class="help-q">How does AI Image work?</div>
+        <div class="help-a">Upload a photo, describe the transformation (e.g. "anime style"), then click Transform. Images are generated via Pollinations.ai — no API key needed.</div>
+      </div>
+      <div class="help-item">
+        <div class="help-q">How do I sign in?</div>
+        <div class="help-a">Click "Profile" in the sidebar, then use Google or phone number to sign in.</div>
+      </div>
+    </div>`);
+});
+
+/* Terms of Use */
+$("#termsItem")?.addEventListener("click", () => {
+  _openProfileModal("Terms of Use", `
+    <div class="legal-text">
+      <p><strong>Last updated: May 2026</strong></p>
+      <p>By using AI Workspace, you agree to these terms. This is a portfolio project for demonstration purposes.</p>
+      <p><strong>1. Usage</strong><br>You may use this app for personal, non-commercial purposes. Do not use it for illegal or harmful activities.</p>
+      <p><strong>2. AI Content</strong><br>AI-generated responses are for informational purposes only. We are not responsible for the accuracy of AI outputs.</p>
+      <p><strong>3. Data Storage</strong><br>Your notes, documents, and settings are stored locally in your browser. We do not collect or store your personal data on our servers.</p>
+      <p><strong>4. API Keys</strong><br>Your API key is stored locally in your browser and is never sent to our servers.</p>
+      <p><strong>5. Changes</strong><br>We may update these terms at any time. Continued use of the app constitutes acceptance of updated terms.</p>
+    </div>`);
+});
+
+/* Privacy Policy */
+$("#privacyItem")?.addEventListener("click", () => {
+  _openProfileModal("Privacy Policy", `
+    <div class="legal-text">
+      <p><strong>Last updated: May 2026</strong></p>
+      <p>AI Workspace is committed to protecting your privacy.</p>
+      <p><strong>What we collect</strong><br>We collect authentication data (email or phone number) only if you choose to sign in via Firebase. No other personal data is collected.</p>
+      <p><strong>Local storage</strong><br>Notes, documents, slides, chat history, API keys, and preferences are stored locally in your browser using localStorage and never uploaded to any server.</p>
+      <p><strong>Third-party services</strong><br>We use Groq API for AI chat responses and Pollinations.ai for image generation. Please review their respective privacy policies.</p>
+      <p><strong>Firebase</strong><br>Google Firebase is used for optional authentication. Refer to Google's Privacy Policy for details on how Firebase handles your data.</p>
+      <p><strong>Contact</strong><br>For privacy concerns, use the Report Bug feature to reach us.</p>
+    </div>`);
+});
+
 /* Accent color */
 const _ACCENT_DEFAULT = "#2563eb";
 let _accentColor = localStorage.getItem("aiw-accent") || _ACCENT_DEFAULT;
