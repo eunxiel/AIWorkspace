@@ -1251,7 +1251,7 @@ function _renderUser() {
     if (chevron)   { chevron.style.display = ""; chevron.title = ""; }
   } else {
     if (avatarEl)  { avatarEl.style.cssText = ""; avatarEl.textContent = "👤"; }
-    if (nameEl)    nameEl.textContent   = "Guest";
+    if (nameEl)    nameEl.textContent   = "Profile";
     if (statusEl)  statusEl.textContent = "Tap to sign in";
     if (loginBtn)  loginBtn.style.display  = "";
     if (logoutBtn) logoutBtn.style.display = "none";
