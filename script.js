@@ -118,7 +118,7 @@ $("#saveSettingsBtn")?.addEventListener("click", () => {
    3b. THEME TOGGLE
    ========================================================= */
 const themeBtn = $("#themeToggle");
-const savedTheme = localStorage.getItem("aiw-theme") || "light";
+const savedTheme = localStorage.getItem("aiw-theme") || "dark";
 if (savedTheme === "dark") document.documentElement.setAttribute("data-theme", "dark");
 themeBtn?.addEventListener("click", () => {
   const isDark = document.documentElement.getAttribute("data-theme") === "dark";
