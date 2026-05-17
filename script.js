@@ -1384,6 +1384,119 @@ $("#authPhone")?.addEventListener("keydown", e => { if (e.key === "Enter") $("#s
 $("#otpInput")?.addEventListener("keydown",  e => { if (e.key === "Enter") $("#verifyOtpBtn")?.click(); });
 
 /* =========================================================
+   16.4. SEARCH
+   ========================================================= */
+const _searchInput   = $("#searchInput");
+const _searchResults = $("#searchResults");
+
+const _SEARCH_PAGES = [
+  { icon:"🏠", title:"Home",        page:"home" },
+  { icon:"💬", title:"AI Chat",     page:"chat" },
+  { icon:"🖼️", title:"AI Image",    page:"files" },
+  { icon:"📝", title:"AI Notes",    page:"notes" },
+  { icon:"🌐", title:"Translation", page:"translation" },
+  { icon:"🎞️", title:"AI Slides",  page:"slides" },
+  { icon:"📄", title:"AI Docs",     page:"docs" },
+  { icon:"👤", title:"Profile",     page:"profile" },
+];
+
+function _runSearch(q) {
+  if (!_searchResults) return;
+  const lq = q.toLowerCase();
+  let html = "";
+
+  /* Pages */
+  const pageHits = _SEARCH_PAGES.filter(p => p.title.toLowerCase().includes(lq));
+  if (pageHits.length) {
+    html += `<div class="search-result-label">Pages</div>`;
+    html += pageHits.map(p =>
+      `<div class="search-result-item" data-stype="page" data-spage="${p.page}">
+         <span class="search-result-icon">${p.icon}</span>
+         <div><div class="search-result-title">${escHtml(p.title)}</div></div>
+       </div>`).join("");
+  }
+
+  /* Notes */
+  const noteHits = notes.filter(n =>
+    n.title.toLowerCase().includes(lq) || n.body.toLowerCase().includes(lq)
+  ).slice(0, 4);
+  if (noteHits.length) {
+    html += `<div class="search-result-label">Notes</div>`;
+    html += noteHits.map(n =>
+      `<div class="search-result-item" data-stype="note" data-sid="${n.id}">
+         <span class="search-result-icon">📝</span>
+         <div>
+           <div class="search-result-title">${escHtml(n.title)}</div>
+           <div class="search-result-sub">${escHtml(n.body.slice(0, 50))}…</div>
+         </div>
+       </div>`).join("");
+  }
+
+  /* Docs */
+  const docHits = docs.filter(d => d.title.toLowerCase().includes(lq)).slice(0, 4);
+  if (docHits.length) {
+    html += `<div class="search-result-label">Documents</div>`;
+    html += docHits.map(d =>
+      `<div class="search-result-item" data-stype="doc" data-sid="${d.id}">
+         <span class="search-result-icon">${DOC_ICONS[d.type] || "📄"}</span>
+         <div>
+           <div class="search-result-title">${escHtml(d.title)}</div>
+           <div class="search-result-sub">${escHtml(d.edited)}</div>
+         </div>
+       </div>`).join("");
+  }
+
+  /* Slides */
+  const slideHits = slides.filter(s => s.title.toLowerCase().includes(lq)).slice(0, 4);
+  if (slideHits.length) {
+    html += `<div class="search-result-label">Slides</div>`;
+    html += slideHits.map(s =>
+      `<div class="search-result-item" data-stype="slide">
+         <span class="search-result-icon">🎞️</span>
+         <div>
+           <div class="search-result-title">${escHtml(s.title)}</div>
+           <div class="search-result-sub">Slide ${escHtml(s.num)}</div>
+         </div>
+       </div>`).join("");
+  }
+
+  if (!html) html = `<div class="search-no-result">No results for "${escHtml(q)}"</div>`;
+  _searchResults.innerHTML = html;
+  _searchResults.classList.add("show");
+}
+
+function _closeSearch() {
+  _searchResults?.classList.remove("show");
+  if (_searchInput) _searchInput.value = "";
+}
+
+_searchInput?.addEventListener("input", e => {
+  const q = e.target.value.trim();
+  if (!q) { _searchResults?.classList.remove("show"); return; }
+  _runSearch(q);
+});
+
+_searchInput?.addEventListener("keydown", e => {
+  if (e.key === "Escape") _closeSearch();
+});
+
+_searchResults?.addEventListener("click", e => {
+  const item = e.target.closest(".search-result-item");
+  if (!item) return;
+  const type = item.dataset.stype;
+  const id   = Number(item.dataset.sid);
+  if (type === "page")  { showPage(item.dataset.spage); }
+  else if (type === "note")  { showPage("notes"); }
+  else if (type === "doc")   { showPage("docs"); openDocEditor(id); }
+  else if (type === "slide") { showPage("slides"); }
+  _closeSearch();
+});
+
+document.addEventListener("click", e => {
+  if (!e.target.closest(".search-wrap")) _searchResults?.classList.remove("show");
+});
+
+/* =========================================================
    16.5. PROFILE PAGE HANDLERS
    ========================================================= */
 
